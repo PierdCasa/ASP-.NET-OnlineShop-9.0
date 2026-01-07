@@ -166,7 +166,7 @@ Implementarea a fost facuta folosind Python, BeautifulSoup si Regex.
 
 ## Cum arata ?
 - Landing Page utilizator nelogat (Vizitator)
-  ![Landing Page](docs_github/Screenshot from 2026-01-07 04-01-38.png)
+  ![Landing Page](docs_github/screenhot.png)
 
 
 
