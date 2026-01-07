@@ -1,0 +1,57 @@
+@model Order
+@{ ViewData["Title"] = "Confirmare Comandă"; }
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+        <div class="card border-success">
+            <div class="card-body text-center p-5">
+                <h2 class="text-success mb-3">✅ Comandă Plasată cu Succes!</h2>
+                <p class="lead">Mulțumim pentru achiziție!</p>
+                
+                <div class="alert alert-light mt-4">
+                    <h5>Detalii Comandă</h5>
+                    <div class="text-start">
+                        <p><strong>Număr comandă:</strong> #@Model.Id</p>
+                        <p><strong>Data:</strong> @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</p>
+                        <p><strong>Adresă livrare:</strong> @Model.ShippingAddress</p>
+                        <p><strong>Status:</strong> <span class="badge bg-info">@Model.Status</span></p>
+                    </div>
+                </div>
+
+                <h5 class="mt-4">Produse Comandate</h5>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Produs</th>
+                                <th>Cantitate</th>
+                                <th>Preț Unitar</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderItems!)
+                            {
+                                <tr>
+                                    <td>@item.Product?.Title</td>
+                                    <td>@item.Quantity</td>
+                                    <td>@item.UnitPrice.ToString("F2") RON</td>
+                                    <td>@((item.Quantity * item.UnitPrice).ToString("F2")) RON</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="alert alert-light mt-3">
+                    <h5>Total: <span class="text-primary">@Model.TotalAmount.ToString("F2") RON</span></h5>
+                </div>
+
+                <div class="mt-4">
+                    <p class="text-muted">Un email de confirmare a fost trimis la adresa ta.</p>
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-primary">Continuă Cumpărăturile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

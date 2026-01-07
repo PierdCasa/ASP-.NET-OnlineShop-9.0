@@ -1,0 +1,75 @@
+@model IEnumerable<Product>
+@{ ViewData["Title"] = "Gestiune Produse"; }
+
+<div class="mb-4 d-flex justify-content-between align-items-center">
+    <h1>📦 Gestiune Produse</h1>
+    <div>
+        <a href="@Url.Action("CreateProduct", "Admin")" class="btn btn-success">➕ Adaugă Produs</a>
+        <a href="@Url.Action("Dashboard", "Admin")" class="btn btn-secondary">← Dashboard</a>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Titlu</th>
+                <th>Categorie</th>
+                <th>Preț</th>
+                <th>Stoc</th>
+                <th>Status</th>
+                <th>Rating</th>
+                <th>Acțiuni</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in Model)
+            {
+                <tr>
+                    <td>#@product.Id</td>
+                    <td>@product.Title</td>
+                    <td>@product.Category?.Name</td>
+                    <td>@product.Price.ToString("F2") RON</td>
+                    <td>@product.Stock</td>
+                    <td>
+                        @if (product.Status == ProductStatus.Aprobat)
+                        {
+                            <span class="badge bg-success">Aprobat</span>
+                        }
+                        else if (product.Status == ProductStatus.Pending)
+                        {
+                            <span class="badge bg-warning">În așteptare</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Respins</span>
+                        }
+                    </td>
+                    <td>
+                        @if (product.Rating.HasValue)
+                        {
+                            <span>@product.Rating?.ToString("F1")⭐</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                    </td>
+                    <td>
+                        <a href="@Url.Action("EditProduct", "Admin", new { id = product.Id })" class="btn btn-sm btn-warning">Editează</a>
+                        <form asp-action="DeleteProduct" asp-route-id="@product.Id" method="post" style="display:inline">
+                             <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Sigur?')">Șterge</button>
+                        </form>
+                        @if (product.Status == ProductStatus.Pending)
+                        {
+                            <form asp-action="ApproveProduct" asp-route-id="@product.Id" method="post" style="display:inline">
+                                <button type="submit" class="btn btn-sm btn-success">Aprobă</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

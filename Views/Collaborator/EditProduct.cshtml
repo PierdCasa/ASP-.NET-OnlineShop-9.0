@@ -1,0 +1,81 @@
+@model Product
+@{ ViewData["Title"] = "Editează Produs"; }
+
+<div class="mb-4">
+    <h1>✏️ Editează Produs: @Model.Title</h1>
+    <p class="text-warning">⚠️ După editare, produsul va reveni în stare de așteptare pentru aprobare.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="EditProduct" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Title" class="form-label">Titlu</label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="CategoryId" class="form-label">Categorie</label>
+                    <select asp-for="CategoryId" class="form-select">
+                        <option value="">Selectează categoria</option>
+                        @foreach (var cat in ViewBag.Categories as IEnumerable<Category>)
+                        {
+                            <option value="@cat.Id" selected="@(cat.Id == Model.CategoryId)">@cat.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label">Descriere</label>
+                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Price" class="form-label">Preț (RON)</label>
+                    <input asp-for="Price" type="number" step="0.01" min="0.01" class="form-control" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Stock" class="form-label">Stoc</label>
+                    <input asp-for="Stock" type="number" min="0" class="form-control" />
+                    <span asp-validation-for="Stock" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Imagine Nouă (opțional)</label>
+                    <input type="file" name="imageFile" class="form-control" accept=".jpg,.jpeg,.png,.gif" />
+                    <small class="text-muted">Lasă gol pentru a păstra imaginea actuală</small>
+                    @if (ViewData.ModelState["ImageFile"] != null)
+                    {
+                        <span class="text-danger">@ViewData.ModelState["ImageFile"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
+                    }
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.ImagePath))
+            {
+                <div class="mb-3">
+                    <label class="form-label">Imagine Actuală</label>
+                    <div>
+                        <img src="@Model.ImagePath" alt="Imagine produs" style="max-height: 150px; border-radius: 8px;" />
+                    </div>
+                </div>
+            }
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-warning">💾 Salvează Modificările</button>
+                <a href="@Url.Action("MyProducts", "Collaborator")" class="btn btn-secondary">Anulează</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

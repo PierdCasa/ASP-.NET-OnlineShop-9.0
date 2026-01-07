@@ -1,0 +1,50 @@
+@model IEnumerable<WishlistItem>
+@{ ViewData["Title"] = "Wishlist"; }
+
+<h1 class="mb-4">❤️ Wishlist-ul meu</h1>
+
+@if (Model.Any())
+{
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card product-card h-100">
+                    <img src="@item.Product?.ImagePath" class="card-img-top product-image" alt="@item.Product?.Title" />
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@item.Product?.Title</h5>
+                        <p class="card-text text-muted">@item.Product?.Category?.Name</p>
+                        <h5 class="text-primary mt-auto mb-3">@item.Product?.Price.ToString("F2") RON</h5>
+                        
+                        <div class="d-grid gap-2">
+                            @if (item.Product?.Stock > 0)
+                            {
+                                <form asp-controller="Wishlist" asp-action="MoveToCart" method="post">
+                                    <input type="hidden" name="wishlistItemId" value="@item.Id" />
+                                    <button type="submit" class="btn btn-success btn-sm">Mută în Coș</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <button class="btn btn-secondary btn-sm" disabled>Indisponibil</button>
+                            }
+                            
+                            <form asp-controller="Wishlist" asp-action="Remove" method="post">
+                                <input type="hidden" name="wishlistItemId" value="@item.Id" />
+                                <button type="submit" class="btn btn-danger btn-sm">Șterge</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <h5>Wishlist-ul tău este gol</h5>
+        <p>Adaugă produse favorite pentru a le urmări!</p>
+        <a href="@Url.Action("Index", "Products")" class="btn btn-primary">Explorează Produse</a>
+    </div>
+}

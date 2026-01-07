@@ -1,0 +1,47 @@
+﻿@model IEnumerable<Product>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@{
+    ViewData["Title"] = "Home";
+    var currentUser = await UserManager.GetUserAsync(User);
+    var displayName = currentUser?.FirstName ?? "Vizitator";
+}
+
+<div class="jumbotron bg-primary text-white p-5 rounded mb-4">
+    <h1 class="display-4">Bine ai venit la Stario, @displayName!</h1>
+    <p class="lead">Descoperă cele mai bune produse cu prețuri grozave.</p>
+    <a class="btn btn-light btn-lg" href="/Products/Index">Vezi Produse</a>
+</div>
+
+<h2 class="mb-4">Produse Recomandate</h2>
+
+@if (Model.Any())
+{
+    <div class="row">
+        @foreach (var product in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card product-card h-100">
+                    <img src="@product.ImagePath" class="card-img-top product-image" alt="@product.Title" />
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@product.Title</h5>
+                        <p class="card-text text-muted">@product.Category?.Name</p>
+                        @if (product.Rating.HasValue)
+                        {
+                            <div class="rating mb-2">
+                                @for (int i = 0; i < (int)product.Rating; i++) { <span>⭐</span> }
+                                <small>(@product.Rating?.ToString("F1"))</small>
+                            </div>
+                        }
+                        <h4 class="text-primary mt-auto">@product.Price.ToString("F2") RON</h4>
+                        <a asp-controller="Products" asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary mt-2">Vezi Detalii</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info">Nu sunt produse disponibile.</div>
+}

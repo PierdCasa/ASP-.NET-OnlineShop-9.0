@@ -1,0 +1,165 @@
+@model Product
+@{ ViewData["Title"] = Model.Title; }
+
+<div class="row">
+    <div class="col-md-6">
+        <img src="@Model.ImagePath" class="img-fluid rounded" alt="@Model.Title" />
+    </div>
+    <div class="col-md-6">
+        <h1>@Model.Title</h1>
+        <p class="text-muted">Categorie: <strong>@Model.Category?.Name</strong></p>
+        @if (Model.Rating.HasValue)
+        {
+            <div class="rating mb-3" style="font-size: 1.3rem;">
+                @for (int i = 0; i < Math.Round((double)Model.Rating); i++) { <span>⭐</span> }
+                <span>(@Model.Rating?.ToString("F1"))</span>
+            </div>
+        }
+        <h3 class="text-primary mb-3">@Model.Price.ToString("F2") RON</h3>
+        @if (Model.Stock > 0)
+        {
+            <p class="text-success"><strong>În stoc: @Model.Stock</strong></p>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <form asp-controller="Cart" asp-action="Add" method="post" class="mb-3">
+                    <input type="hidden" name="productId" value="@Model.Id" />
+                    <div class="input-group" style="max-width: 200px;">
+                        <input type="number" name="quantity" value="1" min="1" max="@Model.Stock" class="form-control" />
+                        <button type="submit" class="btn btn-primary">Adaugă în Coș</button>
+                    </div>
+                </form>
+                <form asp-controller="Wishlist" asp-action="Add" method="post">
+                    <input type="hidden" name="productId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-outline-danger">❤️ Wishlist</button>
+                </form>
+            }
+            else
+            {
+                <div class="alert alert-warning mb-3">
+                    <strong>🔒 Pentru a continua, autentifică-te sau creează un cont.</strong>
+                </div>
+                <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@($"/Cart/Add?productId={Model.Id}&quantity=1")" class="btn btn-primary">🔐 Login pentru a Cumpăra</a>
+            }
+        }
+        else
+        {
+            <p class="text-danger"><strong>Indisponibil</strong></p>
+        }
+    </div>
+</div>
+
+<hr class="my-5" />
+<div class="row">
+    <div class="col-md-8">
+        <h3>Descriere</h3>
+        <p>@Model.Description</p>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white"><h5 class="mb-0">🤖 Product Assistant</h5></div>
+            <div class="card-body" style="height: 400px; overflow-y: auto;">
+                <div id="chatMessages">
+                    <div class="alert alert-info small">Întreabă-mă despre produs. Ex: "Are garanție?"</div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="input-group input-group-sm">
+                    <input type="text" id="aiQuestion" class="form-control" placeholder="Întrebare..." />
+                    <button class="btn btn-primary btn-sm" onclick="askAI()">Trimite</button>
+                </div>
+            </div>
+        </div>
+</div>
+</div>
+
+@if (Model.FAQs != null && Model.FAQs.Any(f => f.TimesAsked >= 3))
+{
+    <hr class="my-5" />
+    <h3>❓ Întrebări Frecvente</h3>
+    <div class="accordion mb-4" id="faqAccordion">
+        @foreach (var faq in Model.FAQs.Where(f => f.TimesAsked >= 3).OrderByDescending(f => f.TimesAsked).Take(5))
+        {
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-@faq.Id">
+                        @faq.Question
+                        <span class="badge bg-secondary ms-2">@faq.TimesAsked întrebări</span>
+                    </button>
+                </h2>
+                <div id="faq-@faq.Id" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">@faq.Answer</div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<hr class="my-5" />
+<h3>Review-uri</h3>
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <div class="card mb-4">
+        <div class="card-body">
+            <form asp-controller="Reviews" asp-action="Create" method="post">
+                <input type="hidden" name="productId" value="@Model.Id" />
+                <div class="mb-3">
+                    <label class="form-label">Rating</label>
+                    <select name="rating" class="form-select">
+                        <option value="">- Alege -</option>
+                        <option value="5">⭐⭐⭐⭐⭐</option>
+                        <option value="4">⭐⭐⭐⭐</option>
+                        <option value="3">⭐⭐⭐</option>
+                        <option value="2">⭐⭐</option>
+                        <option value="1">⭐</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Review (opțional)</label>
+                    <textarea name="text" class="form-control" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Postează</button>
+            </form>
+        </div>
+    </div>
+}
+@if (Model.Reviews != null && Model.Reviews.Any())
+{
+    @foreach (var review in Model.Reviews.OrderByDescending(r => r.CreatedAt))
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <h6>@review.User?.FirstName @review.User?.LastName</h6>
+                @if (review.Rating.HasValue)
+                {
+                    <div class="rating">@for (int i = 0; i < review.Rating; i++) { <span>⭐</span> }</div>
+                }
+                @if (!string.IsNullOrEmpty(review.Text)) { <p class="mt-2">@review.Text</p> }
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="alert alert-info">Nu sunt review-uri. Fii primul!</div>
+}
+
+@section Scripts {
+    <script>
+        async function askAI() {
+            const question = document.getElementById('aiQuestion').value;
+            if (!question.trim()) return;
+            const chatDiv = document.getElementById('chatMessages');
+            chatDiv.innerHTML += `<div class="mb-2"><small class="text-muted">Tu: ${question}</small></div>`;
+            document.getElementById('aiQuestion').value = '';
+            try {
+                const response = await fetch(`/Products/AskAI?productId=@Model.Id&question=${encodeURIComponent(question)}`, { method: 'POST' });
+                const data = await response.json();
+                chatDiv.innerHTML += `<div class="mb-2 p-2 bg-light rounded"><small><strong>AI:</strong> ${data.answer}</small></div>`;
+                chatDiv.scrollTop = chatDiv.scrollHeight;
+            } catch (error) {
+                chatDiv.innerHTML += `<div class="mb-2 text-danger"><small>Eroare</small></div>`;
+            }
+        }
+        document.getElementById('aiQuestion').addEventListener('keypress', e => { if (e.key === 'Enter') askAI(); });
+    </script>
+}

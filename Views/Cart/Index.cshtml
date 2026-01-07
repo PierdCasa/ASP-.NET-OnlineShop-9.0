@@ -1,0 +1,90 @@
+@model IEnumerable<CartItem>
+@{ ViewData["Title"] = "Coșul Meu"; }
+
+<h1 class="mb-4">🛒 Coșul Meu</h1>
+
+@if (Model.Any())
+{
+    <div class="row">
+        <div class="col-md-8">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Produs</th>
+                            <th>Preț Unitar</th>
+                            <th>Cantitate</th>
+                            <th>Subtotal</th>
+                            <th>Acțiuni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <a href="@Url.Action("Details", "Products", new { id = item.ProductId })">
+                                        @item.Product?.Title
+                                    </a>
+                                </td>
+                                <td>@item.Product?.Price.ToString("F2") RON</td>
+                                <td>
+                                    <form asp-controller="Cart" asp-action="UpdateQuantity" method="post" class="d-flex gap-2" style="width: 120px;">
+                                        <input type="hidden" name="cartItemId" value="@item.Id" />
+                                        <input type="number" name="quantity" value="@item.Quantity" min="1" class="form-control form-control-sm" />
+                                        <button type="submit" class="btn btn-sm btn-primary">✓</button>
+                                    </form>
+                                </td>
+                                <td>@item.Subtotal.ToString("F2") RON</td>
+                                <td>
+                                    <form asp-controller="Cart" asp-action="Remove" method="post">
+                                        <input type="hidden" name="cartItemId" value="@item.Id" />
+                                        <button type="submit" class="btn btn-sm btn-danger">Șterge</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Rezumat Comandă</h5>
+                    <hr />
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <strong>@ViewBag.Total?.ToString("F2") RON</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Transport:</span>
+                        <strong>Gratuit</strong>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between mb-4">
+                        <h5 class="mb-0">Total:</h5>
+                        <h5 class="text-primary mb-0">@ViewBag.Total?.ToString("F2") RON</h5>
+                    </div>
+                    
+                    <form asp-controller="Cart" asp-action="Checkout" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Adresă Livrare</label>
+                            <textarea name="shippingAddress" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 btn-lg">Plasează Comanda</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <h5>Coșul tău este gol</h5>
+        <p>Adaugă produse și revino să faci cumpărăturile!</p>
+        <a href="@Url.Action("Index", "Products")" class="btn btn-primary">Vezi Produse</a>
+    </div>
+}

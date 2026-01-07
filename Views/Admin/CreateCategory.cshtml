@@ -1,0 +1,33 @@
+@model Category
+@{ ViewData["Title"] = "Adaugă Categorie"; }
+
+<div class="mb-4">
+    <h1>➕ Adaugă Categorie Nouă</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="CreateCategory" method="post">
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">Nume Categorie *</label>
+                <input asp-for="Name" class="form-control" placeholder="Ex: Electronice" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label">Descriere (opțional)</label>
+                <textarea asp-for="Description" class="form-control" rows="3" placeholder="Descriere scurtă..."></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success">💾 Salvează</button>
+                <a href="@Url.Action("Categories", "Admin")" class="btn btn-secondary">Anulează</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

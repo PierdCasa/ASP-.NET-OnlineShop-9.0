@@ -1,0 +1,63 @@
+@model IEnumerable<Product>
+@{ ViewData["Title"] = "Produsele Mele"; }
+
+<div class="mb-4 d-flex justify-content-between align-items-center">
+    <h1>📦 Produsele Mele</h1>
+    <a href="@Url.Action("CreateProduct", "Collaborator")" class="btn btn-success">➕ Propune Produs Nou</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Nu ai niciun produs. Adaugă unul!</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Titlu</th>
+                    <th>Categorie</th>
+                    <th>Preț</th>
+                    <th>Stoc</th>
+                    <th>Status</th>
+                    <th>Acțiuni</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model)
+                {
+                    <tr>
+                        <td>#@product.Id</td>
+                        <td>@product.Title</td>
+                        <td>@product.Category?.Name</td>
+                        <td>@product.Price.ToString("F2") RON</td>
+                        <td>@product.Stock</td>
+                        <td>
+                            @if (product.Status == ProductStatus.Aprobat)
+                            {
+                                <span class="badge bg-success">Aprobat</span>
+                            }
+                            else if (product.Status == ProductStatus.Pending)
+                            {
+                                <span class="badge bg-warning text-dark">În așteptare</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Respins</span>
+                                @if (!string.IsNullOrEmpty(product.RejectionReason))
+                                {
+                                    <br /><small class="text-muted">@product.RejectionReason</small>
+                                }
+                            }
+                        </td>
+                        <td>
+                            <a href="@Url.Action("EditProduct", "Collaborator", new { id = product.Id })" class="btn btn-sm btn-warning">✏️ Editează</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

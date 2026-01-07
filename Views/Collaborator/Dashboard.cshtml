@@ -1,0 +1,17 @@
+@model dynamic
+@{ ViewData["Title"] = "Dashboard Colaborator"; }
+
+<div class="mb-4">
+    <h1>📝 Dashboard Colaborator</h1>
+    <p class="text-muted">Propune produse noi pentru magazin</p>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Acțiuni</h5>
+    </div>
+    <div class="card-body">
+        <a href="@Url.Action("CreateProduct", "Collaborator")" class="btn btn-success btn-lg">➕ Propune Produs Nou</a>
+        <a href="@Url.Action("MyProducts", "Collaborator")" class="btn btn-outline-primary btn-lg ms-2">📦 Produsele Mele</a>
+    </div>
+</div>

@@ -1,0 +1,109 @@
+@model IEnumerable<Product>
+@{ ViewData["Title"] = "Produse"; }
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Filtrare</h5>
+                <form method="get" asp-controller="Products" asp-action="Index">
+                    <div class="mb-3">
+                        <label class="form-label">Categorie</label>
+                        <select name="categoryId" class="form-select">
+                            <option value="">Toate</option>
+                            @foreach (var cat in ViewBag.Categories)
+                            {
+                                var isSelected = ViewBag.CurrentCategory != null && ViewBag.CurrentCategory == cat.Id;
+                                <option value="@cat.Id" selected="@isSelected">@cat.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Sortare</label>
+                        <select name="sortOrder" class="form-select">
+                            <option value="">Cel mai nou</option>
+                            <option value="price_asc" selected="@(ViewBag.CurrentSort == "price_asc")">Preț: Crescător</option>
+                            <option value="price_desc" selected="@(ViewBag.CurrentSort == "price_desc")">Preț: Descrescător</option>
+                            <option value="rating_desc" selected="@(ViewBag.CurrentSort == "rating_desc")">Rating: Descrescător</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Aplică</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        @if (ViewBag.CurrentSearch != null)
+        {
+            <div class="alert alert-info">Rezultate pentru: <strong>@ViewBag.CurrentSearch</strong></div>
+        }
+        @if (Model.Any())
+        {
+            <div class="row">
+                @foreach (var product in Model)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card product-card h-100">
+                            <img src="@product.ImagePath" class="card-img-top product-image" alt="@product.Title" />
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">@product.Title</h5>
+                                <p class="card-text text-muted small">@product.Category?.Name</p>
+                                @if (product.Rating.HasValue)
+                                {
+                                    <div class="rating mb-2">
+                                        @for (int i = 0; i < Math.Round((double)product.Rating); i++) { <span>⭐</span> }
+                                    </div>
+                                }
+                                <h5 class="text-primary mt-auto">@product.Price.ToString("F2") RON</h5>
+                                <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary btn-sm mt-2">Vezi Detalii</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning">Niciun produs găsit.</div>
+        }
+        
+
+        @if (ViewBag.TotalPages > 1)
+        {
+            <nav aria-label="Paginare produse" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    @if (ViewBag.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1, search = ViewBag.CurrentSearch, categoryId = ViewBag.CurrentCategory, sortOrder = ViewBag.CurrentSort })">« Anterior</a>
+                        </li>
+                    }
+                    
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        if (i == ViewBag.CurrentPage)
+                        {
+                            <li class="page-item active">
+                                <span class="page-link">@i</span>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { page = i, search = ViewBag.CurrentSearch, categoryId = ViewBag.CurrentCategory, sortOrder = ViewBag.CurrentSort })">@i</a>
+                            </li>
+                        }
+                    }
+                    
+                    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1, search = ViewBag.CurrentSearch, categoryId = ViewBag.CurrentCategory, sortOrder = ViewBag.CurrentSort })">Următor »</a>
+                        </li>
+                    }
+                </ul>
+                <p class="text-center text-muted">Pagina @ViewBag.CurrentPage din @ViewBag.TotalPages (@ViewBag.TotalItems produse total)</p>
+            </nav>
+        }
+    </div>
+</div>
