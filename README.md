@@ -140,7 +140,7 @@ grant all privileges on OnlineShopDb.* to root;
 --"DefaultConnection": "Server=localhost;Database=OnlineShopDb;User=root;Password=t1234578!"
 --modifica conform user-ului tau pentru a rula
 ```
-Terminal Linux/PWD:
+Terminal Linux/PowerShell:
 ```
 mysql -u root -p OnlineShopDb < /home/mario/my_backup.sql
 
