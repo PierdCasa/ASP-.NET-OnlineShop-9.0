@@ -1,5 +1,5 @@
 # Proiect ASP .NET MVC 9.0 — OnlineShop "Stario"               + WebScraper Emag
-Un proiect in care am implementat lucrand in echipa (Mario + Staicu => Stario) o aplicatie web care implementeaza un magazin online. 
+Repo-ul contine proiect in care am implementat lucrand in echipa  o aplicatie web care implementeaza un magazin online . Pentru baza de date am folosit MySql si am folosit un fisier .
 
 ## Functionalitati :
 Cerintele minime : 
@@ -130,3 +130,5 @@ Pentru a gestiona cat mai bine tasku-urile am folosit Trello + git.
 ### Staicu
 
 ### Mario
+
+## Cum rulezi proiect
