@@ -1,5 +1,5 @@
 # Proiect ASP .NET MVC 9.0 — OnlineShop "Stario"               + WebScraper Emag
-Repo-ul contine proiect in care am implementat lucrand in echipa  o aplicatie web care implementeaza un magazin online . Pentru baza de date am folosit MySql si am folosit un fisier .
+Un proiect in care am implementat lucrand in echipa  o aplicatie web care implementeaza un magazin online . Pentru baza de date am folosit MySql , impreuna cu un fisier sql de backup (care contine baza de date propriu zisa) + MySqlDump .
 
 ## Functionalitati :
 Cerintele minime : 
@@ -127,8 +127,46 @@ complete, funcționale și documentate conform cerințelor.
 ## Implementare:
 
 Pentru a gestiona cat mai bine tasku-urile am folosit Trello + git.
-### Staicu
 
-### Mario
 
-## Cum rulezi proiect
+## Cum rulezi proiectul:
+Terminal MySql:
+```
+create database OnlineShopDb;
+CREATE USER root IDENTIFIED WITH mysql_native_password BY 't1234578!';
+grant all privileges on OnlineShopDb.* to root;
+
+--aici se poate schimba cu orice alt user VEZI appsettings.json
+--"DefaultConnection": "Server=localhost;Database=OnlineShopDb;User=root;Password=t1234578!"
+--modifica conform user-ului tau pentru a rula
+```
+Terminal Linux/PWD:
+```
+mysql -u root -p OnlineShopDb < /home/mario/my_backup.sql
+
+--modifica conform PATH-ului my_backup.sql
+--/home/mario/my_backup.sql
+```
+
+Din IDE-ul preferat (Rider(Linux) / Visual Studio Code 2022(Windows)):
+```
+dotnet build
+dotnet run
+```
+
+## Web-Scraper 
+
+- Pentru a popula baza de date mai eficient am memorat produsele intr-un fisier JSON
+- Ne-am gandit la JSON pentru ca majoritatea magazinelor online au codul HTML cu datele produselor public ( click dreapta si view-source code) si pot fi vulnerabile unui scraper
+### Cum functioneaza ?
+Implementarea a fost facuta folosind Python, BeautifulSoup si Regex. 
+- Pe scurt , ii dat link-ul unui pagini de la Emag si acesta iti returneaza toate produsele in formatul JSON corespunzator proiectului.
+
+##Dificultati intalnite:
+
+##Cum arata ?
+
+
+
+
+
